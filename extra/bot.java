@@ -14,15 +14,18 @@ public class bot {
 
     public void getWeather(String state)
     {
-        String endPoint = "http://api.openweathermap.org/data/2.5/weather?q=";
+        String endPoint = "https://api.openweathermap.org/data/2.5/weather?units=imperial&q=";
         String appID = "&APPID=";
         String key = "26aa1d90a24c98fad4beaac70ddbf274";
 
         endPoint += state + appID + key;
+        System.out.println(endPoint);
         try
         {
-            String result = getJson(endPoint + state + appID + key);
-            System.out.println(result);
+            String result = getJson(endPoint);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            WeatherAPI myWeather = gson.fromJson(result, WeatherAPI.class);
+            System.out.println("This is the weather at " + state + ": " + result);
         }
         catch (Exception e)
         {
@@ -61,6 +64,80 @@ public class bot {
         
         return content.toString();
     }
-
+    class WeatherAPI
+    {
+        private String name;
+        private List<Weather> weather;
+        private Main main;
+        
+        // name accessor and mutator
+        public void setName(String n)
+        {
+            name = n;
+        }
+        public String getName()
+        {
+            return name;
+        }
+        
+        // weather accessor and mutator
+        public void setWeather(List<Weather> w)
+        {
+            weather = w;
+        }
+        public List<Weather> getWeather()
+        {
+            return weather;
+        }
+        
+        // main accessor and mutator
+        public void setMain(Main m)
+        {
+            main = m;
+        }
+        public Main getMain()
+        {
+            return main;
+        }
+    }
+    class Weather
+    {
+        private String description;
+        
+        // description mutator and accessor
+        public void setDescription(String d)
+        {
+            description = d;
+        }
+        public String getDescription()
+        {
+            return description;
+        }
+    }
+    class Main
+    {
+        private double temp;
+        private double feels_like;
+        
+        // temperature accessor and mutator
+        public void setTemp(double t)
+        {
+            temp = t;
+        }
+        public double getTemp()
+        {
+            return temp;
+        }
+        
+        // feels_like accessor and mutator
+        public void setFeelsLike(double f)
+        {
+            feels_like = f;
+        }
+        public double getFeelsLike()
+        {
+            return feels_like;
+        }
+    }
 }
 
