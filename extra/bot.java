@@ -19,13 +19,13 @@ public class bot {
         String key = "26aa1d90a24c98fad4beaac70ddbf274";
 
         endPoint += state + appID + key;
-        System.out.println(endPoint);
+        //System.out.println(endPoint);
         try
         {
             String result = getJson(endPoint);
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             WeatherAPI myWeather = gson.fromJson(result, WeatherAPI.class);
-            System.out.println("This is the weather at " + state + ": " + result);
+            System.out.println("This is the weather at " + state + ": " + myWeather.displayWeather(result));
         }
         catch (Exception e)
         {
@@ -50,16 +50,20 @@ public class bot {
 
         StringBuffer content = null;
         if (responseCode == 200)
-        {
-            // read the response into a StringBuffer
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            content = new StringBuffer();
-            //System.out.println(content);
-        }
-        else
-        {
-            return "";
-        }
+		{
+			// read the response into a StringBuffer
+			Scanner in = new Scanner(connection.getInputStream());
+			content = new StringBuffer();
+			while (in.hasNextLine())
+			{
+				content.append(in.nextLine() + "\n");
+			}
+			in.close();
+		}
+		else
+		{
+			return "";
+		}
         //connection.disconnect();
         
         return content.toString();
@@ -98,6 +102,15 @@ public class bot {
         public Main getMain()
         {
             return main;
+        }
+        public String displayWeather(String json)
+        {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            WeatherAPI myWeather = gson.fromJson(json, WeatherAPI.class);
+
+            return "Currently, the weather in " + myWeather.getName() + " features " + myWeather.getWeather().get(0).getDescription() 
+                    + " with a temperature of " + (int)(myWeather.getMain().getTemp()) + " degrees F and feels like " 
+                    + (int)(myWeather.getMain().getFeelsLike()) + " degrees F";
         }
     }
     class Weather
